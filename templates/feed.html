@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>{{ item.title }}</title>
+   <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+   <div class="app feed-app">
+
+      <img class="story-image" src="{{ item.image }}" alt="{{ item.title }}">
+
+      <div class="story-shade"></div>
+
+      <div class="story-top">
+         <div class="story-progress">
+            {% for number in range(1, total + 1) %}
+            <span class="{% if number <= position %}filled{% endif %}"></span>
+            {% endfor %}
+         </div>
+
+         <div class="story-header">
+            <a href="/publications" class="back-button">←</a>
+            <span>{{ position }}/{{ total }}</span>
+         </div>
+      </div>
+
+      <div class="story-actions">
+         <input type="checkbox" id="like" class="story-like-input">
+         <label for="like" class="story-heart">♥</label>
+         <span>124</span>
+
+         <a href="/publications/{{ next_id }}" class="story-next" aria-label="Следующая публикация">→</a>
+      </div>
+
+      <div class="story-bottom">
+         <h1>{{ item.title }}</h1>
+
+         <p class="story-description">
+            {{ description }}
+         </p>
+
+         <details class="story-more">
+            <summary>Ещё</summary>
+            <p>{{ description }}</p>
+         </details>
+
+         <div class="story-tags">
+            <span>{{ item.theme }}</span>
+            <span>{{ item.area }} кв. м.</span>
+         </div>
+      </div>
+
+      <nav class="bottom-nav">
+         <a href="/publications/1" class="active">
+            <span>⌂</span>
+            Лента
+         </a>
+
+         <a href="/new-publication">
+            <span>⊞</span>
+            Добавление
+         </a>
+
+         <a href="/publications">
+            <span>▦</span>
+            Плитка
+         </a>
+      </nav>
+
+   </div>
+</body>
+
+</html>

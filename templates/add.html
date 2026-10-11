@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Новая публикация</title>
+   <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+   <div class="app editor-app">
+      <header class="editor-header">
+         <a href="/publications" class="editor-back">←</a>
+         <h1>Новая публикация</h1>
+      </header>
+
+      <form method="post" action="/new-publication" enctype="multipart/form-data">
+         <div class="editor-photo" id="photo-preview-box">
+            <img id="photo-preview" alt="Предпросмотр выбранной фотографии"
+                 style="display:none; width:100%; height:100%; object-fit:cover; border-radius:inherit;">
+            <div id="photo-placeholder">
+               <span>▧</span>
+               <p>Предпросмотр изображения</p>
+            </div>
+         </div>
+
+         <p class="editor-label">Загрузить фото или видео</p>
+         <div class="editor-uploads">
+            <label class="upload-box" for="image">
+               <span>▧</span>
+               <span id="photo-label">Загрузить фото</span>
+               <input type="file" id="image" name="image" accept="image/png,image/jpeg,image/webp"
+                      required style="display:none">
+            </label>
+            <div class="upload-box" aria-disabled="true" title="Видео добавим в следующей лабораторной">
+               <span>▹</span>
+               Видео — позже
+            </div>
+         </div>
+
+         <label class="editor-label" for="theme">Тема</label>
+         <select id="theme" name="theme" class="editor-field">
+            {% for option in ["Кухня", "Гостиная", "Спальня", "Рабочее место", "Ванная", "Кабинет"] %}
+            <option value="{{ option }}" {% if theme == option %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+         </select>
+
+         <label class="editor-label" for="title">Название</label>
+         <input class="editor-field" id="title" name="title" value="{{ title }}"
+                placeholder="Уютная гостиная" required>
+
+         <label class="editor-label" for="area">Площадь, кв. м.</label>
+         <input class="editor-field" id="area" name="area" type="number" min="0" step="1"
+                value="{{ area }}" placeholder="23" required>
+
+         <label class="editor-label">Тип элемента</label>
+         <label class="editor-checkbox">
+            <input type="checkbox" name="is_numeric" value="true" {% if is_numeric %}checked{% endif %}>
+            Числовое значение
+         </label>
+
+         <label class="editor-label" for="content">Содержимое элемента</label>
+         <input class="editor-field" id="content" name="content" value="{{ content }}"
+                placeholder="Например: 23 или Светлые тона" required>
+
+         <label class="editor-label" for="layer">Порядок наложения</label>
+         <select id="layer" name="layer" class="editor-field">
+            {% for number in range(1, 6) %}
+            <option value="{{ number }}" {% if layer == number %}selected{% endif %}>{{ number }}</option>
+            {% endfor %}
+         </select>
+         <p class="editor-hint">1 — нижний слой, 5 — верхний слой</p>
+
+         <button class="editor-submit" type="submit">Сохранить публикацию</button>
+      </form>
+
+      {% if error %}
+      <p class="editor-error" role="alert">{{ error }}</p>
+      {% endif %}
+
+      <nav class="bottom-nav">
+         <a href="/publications/1"><span>⌂</span>Лента</a>
+         <a href="/new-publication" class="active"><span>⊞</span>Добавление</a>
+         <a href="/publications"><span>▦</span>Плитка</a>
+      </nav>
+   </div>
+
+   <script>
+      const input = document.getElementById('image');
+      const preview = document.getElementById('photo-preview');
+      const placeholder = document.getElementById('photo-placeholder');
+      const photoLabel = document.getElementById('photo-label');
+      let previousObjectUrl = null;
+
+      input.addEventListener('change', function () {
+         if (previousObjectUrl) URL.revokeObjectURL(previousObjectUrl);
+         const file = input.files[0];
+         if (!file) {
+            preview.style.display = 'none';
+            placeholder.style.display = '';
+            photoLabel.textContent = 'Загрузить фото';
+            return;
+         }
+         if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+            input.value = '';
+            alert('Выберите фотографию PNG, JPG или WEBP.');
+            return;
+         }
+         if (file.size > 10 * 1024 * 1024) {
+            input.value = '';
+            alert('Фотография должна быть не больше 10 МБ.');
+            return;
+         }
+         previousObjectUrl = URL.createObjectURL(file);
+         preview.src = previousObjectUrl;
+         preview.style.display = 'block';
+         placeholder.style.display = 'none';
+         photoLabel.textContent = file.name;
+      });
+   </script>
+</body>
+</html>

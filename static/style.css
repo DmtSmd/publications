@@ -1,0 +1,474 @@
+* {
+   box-sizing: border-box;
+}
+
+body {
+   margin: 0;
+   background: #f4f4f4;
+   font-family: Arial, sans-serif;
+   color: #211922;
+}
+
+.app {
+   max-width: 430px;
+   min-height: 100vh;
+   margin: 0 auto;
+   padding: 24px 16px 100px;
+   background: #ffffff;
+   position: relative;
+}
+
+header {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   margin-bottom: 24px;
+}
+
+h1 {
+   margin: 0;
+   font-size: 30px;
+   color: #111;
+}
+
+.search-icon {
+   font-size: 36px;
+   line-height: 1;
+}
+
+.filter {
+   margin-bottom: 20px;
+}
+
+.filter label {
+   display: block;
+   font-size: 13px;
+   margin-bottom: 6px;
+}
+
+.filter-fields {
+   display: flex;
+   align-items: center;
+   gap: 7px;
+}
+
+.filter input {
+   width: 20%;
+   min-width: 0;
+   padding: 12px 8px;
+   border: 1px solid #bdbdbd;
+   border-radius: 7px;
+}
+
+.unit {
+   padding: 12px 5px;
+   font-size: 12px;
+   white-space: nowrap;
+}
+
+.filter button {
+   flex: 1;
+   border: none;
+   border-radius: 12px;
+   background: #e60023;
+   color: white;
+   font-weight: bold;
+   padding: 13px 8px;
+   cursor: pointer;
+}
+
+.grid {
+   display: grid;
+   grid-template-columns: repeat(2, minmax(0, 1fr));
+   gap: 12px;
+}
+
+.card {
+   min-width: 0;
+   overflow: hidden;
+   border: 1px solid #ddd;
+   border-radius: 24px;
+   background: white;
+}
+
+.card img {
+   width: 100%;
+   height: 230px;
+   object-fit: cover;
+   display: block;
+}
+
+.card-info {
+   padding: 10px;
+}
+
+.card h2 {
+   margin: 0 0 10px;
+   font-size: 14px;
+   text-align: center;
+}
+
+.card-details {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 4px;
+}
+
+.tag,
+.area {
+   border: 1px solid #ddd;
+   border-radius: 7px;
+   padding: 6px;
+   font-size: 11px;
+}
+
+.area {
+   font-weight: bold;
+   white-space: nowrap;
+}
+
+
+.bottom-nav {
+   position: fixed;
+   bottom: 0;
+   left: 50%;
+   transform: translateX(-50%);
+
+   width: 100%;
+   max-width: 430px;
+
+   display: flex;
+   justify-content: space-around;
+
+   background: white;
+   border-top: 1px solid #e60023;
+
+   padding: 12px 0 16px;
+   margin: 0;
+   z-index: 100;
+}
+
+
+.bottom-nav a {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 4px;
+   color: #111;
+   text-decoration: none;
+   font-size: 13px;
+}
+
+.bottom-nav a span {
+   font-size: 30px;
+}
+
+.bottom-nav .active {
+   color: #e60023;
+   font-weight: bold;
+}
+
+.empty {
+   grid-column: 1 / -1;
+   text-align: center;
+   color: #777;
+}
+
+/* Экран «Лента» */
+
+.feed-app {
+   height: 100vh;
+   height: 100dvh;
+   min-height: 0;
+   padding: 0;
+   overflow: hidden;
+   position: relative;
+   background: #222;
+   color: white;
+}
+
+.story-image {
+   position: absolute;
+   inset: 0;
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+}
+
+.story-shade {
+   position: absolute;
+   inset: 0;
+   background: linear-gradient(to bottom,
+         rgba(0, 0, 0, 0.35),
+         transparent 35%,
+         rgba(0, 0, 0, 0.75));
+}
+
+.story-top {
+   position: absolute;
+   top: 30px;
+   left: 16px;
+   right: 16px;
+}
+
+.story-progress {
+   display: flex;
+   gap: 5px;
+   margin-bottom: 16px;
+}
+
+.story-progress span {
+   flex: 1;
+   height: 4px;
+   border-radius: 4px;
+   background: rgba(255, 255, 255, 0.6);
+}
+
+.story-progress .filled {
+   background: #e60023;
+}
+
+.story-header {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+}
+
+.back-button,
+.story-next {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 48px;
+   height: 48px;
+   border-radius: 50%;
+   background: white;
+   color: #111;
+   font-size: 30px;
+   text-decoration: none;
+}
+
+.story-actions {
+   position: absolute;
+   right: 16px;
+   bottom: 215px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 7px;
+   z-index: 2;
+}
+
+.story-like-input {
+   position: absolute;
+   opacity: 0;
+   width: 1px;
+   height: 1px;
+}
+
+.story-heart {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   width: 48px;
+   height: 48px;
+   background: white;
+   border-radius: 50%;
+   font-size: 30px;
+   color: #aaa;
+   cursor: pointer;
+}
+
+.story-like-input:checked+.story-heart {
+   color: #e60023;
+}
+
+.story-next {
+   margin-top: 15px;
+}
+
+.story-bottom {
+   position: absolute;
+   bottom: 90px;
+   left: 20px;
+   right: 80px;
+   z-index: 1;
+}
+
+.story-bottom h1 {
+   color: white;
+   font-size: 25px;
+   margin-bottom: 10px;
+}
+
+.story-description {
+   font-size: 15px;
+   line-height: 1.5;
+   display: -webkit-box;
+   -webkit-line-clamp: 2;
+   -webkit-box-orient: vertical;
+   overflow: hidden;
+   margin-bottom: 4px;
+}
+
+.story-more summary {
+   cursor: pointer;
+   text-decoration: underline;
+   font-size: 14px;
+}
+
+.story-more p {
+   font-size: 14px;
+   line-height: 1.4;
+}
+
+.story-tags {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 8px;
+   margin-top: 12px;
+}
+
+.story-tags span {
+   background: rgba(255, 255, 255, 0.25);
+   padding: 8px 12px;
+   border-radius: 20px;
+   font-size: 13px;
+}
+
+/* Экран добавления */
+
+.editor-app {
+   padding-top: 20px;
+}
+
+.editor-header {
+   justify-content: flex-start;
+   gap: 16px;
+   margin-bottom: 18px;
+}
+
+.editor-header h1 {
+   font-size: 21px;
+}
+
+.editor-back {
+   color: #111;
+   font-size: 30px;
+   text-decoration: none;
+}
+
+.editor-photo {
+   height: 230px;
+   border-radius: 22px;
+   background: #eee;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   color: #777;
+   margin-bottom: 18px;
+}
+
+.editor-photo span {
+   font-size: 50px;
+}
+
+.editor-label {
+   display: block;
+   font-size: 13px;
+   font-weight: 600;
+   margin: 14px 0 8px;
+}
+
+.editor-uploads {
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   gap: 10px;
+   margin-bottom: 18px;
+}
+
+.upload-box {
+   background: #f1f1f1;
+   border-radius: 16px;
+   padding: 22px 8px;
+   text-align: center;
+   font-size: 13px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 8px;
+}
+
+.upload-box span {
+   font-size: 30px;
+}
+
+.editor-field {
+   display: block;
+   width: 100%;
+   padding: 13px;
+   border: 1px solid #ccc;
+   border-radius: 10px;
+   background: white;
+   font-size: 14px;
+}
+
+.editor-checkbox {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   font-size: 14px;
+   padding: 8px 0;
+}
+
+.editor-checkbox input {
+   accent-color: #e60023;
+   width: 19px;
+   height: 19px;
+}
+
+.editor-hint {
+   color: #888;
+   font-size: 12px;
+}
+
+.editor-submit {
+   display: block;
+   width: 100%;
+   background: #e60023;
+   color: white;
+   border: none;
+   border-radius: 24px;
+   padding: 15px;
+   margin-top: 24px;
+   font-size: 15px;
+   font-weight: bold;
+   cursor: pointer;
+}
+
+.editor-preview {
+   margin-top: 20px;
+   padding: 18px;
+   border-radius: 16px;
+   background: #f3f3f3;
+}
+
+.preview-content {
+   position: relative;
+   display: inline-block;
+   padding: 10px 15px;
+   background: white;
+   border-radius: 8px;
+   margin: 8px 0;
+}
+
+.editor-error {
+   color: #e60023;
+   font-size: 14px;
+}
+
+.feed-app .bottom-nav {
+   z-index: 100;
+}

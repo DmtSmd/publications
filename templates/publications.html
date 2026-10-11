@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Публикации</title>
+   <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+   <div class="app">
+      <header>
+         <h1>Публикации</h1>
+         <span class="search-icon">⌕</span>
+      </header>
+
+      <form class="filter" method="get" action="/publications">
+         <label for="min_area">Площадь</label>
+
+         <div class="filter-fields">
+            <input id="min_area" type="number" name="min_area" min="0" placeholder="от"
+               value="{{ min_area if min_area is not none else '' }}">
+
+            <input type="number" name="max_area" min="0" placeholder="до"
+               value="{{ max_area if max_area is not none else '' }}">
+
+            <span class="unit">кв. м.</span>
+
+            <button type="submit">Применить</button>
+         </div>
+      </form>
+
+      <main class="grid">
+         {% for item in publications %}
+
+         <article class="card">
+            <a href="/publications/{{ item.id }}">
+               <img src="{{ item.image }}" alt="{{ item.title }}">
+            </a>
+
+
+            <div class="card-info">
+               <h2>{{ item.title }}</h2>
+
+               <div class="card-details">
+                  <span class="tag">{{ item.theme }}</span>
+                  <span class="area">
+                     {{ item.area }} кв. м.
+                  </span>
+               </div>
+            </div>
+         </article>
+         {% else %}
+         <p class="empty">
+            Публикации по заданным параметрам не найдены.
+         </p>
+         {% endfor %}
+      </main>
+
+      <nav class="bottom-nav">
+         <a href="/new-publication">
+            <span>⌂</span>
+            Лента
+         </a>
+
+         <a href="/new-publication">
+            <span>⊞</span>
+            Добавление
+         </a>
+
+         <a href="/publications" class="active">
+            <span>▦</span>
+            Плитка
+         </a>
+      </nav>
+   </div>
+</body>
+
+</html>
