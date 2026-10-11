@@ -67,18 +67,54 @@ def add_context(request, **values):
     return templates.TemplateResponse(request=request, name="add.html", context=context)
 
 
+
 @app.get("/publications", response_class=HTMLResponse)
-def publications(request: Request, min_area: int | None = None, max_area: int | None = None):
+def publications(
+    request: Request,
+    min_area: str = "",
+    max_area: str = "",
+    numeric_only: bool = False,
+):
+    try:
+        min_value = int(min_area) if min_area.strip() else None
+        max_value = int(max_area) if max_area.strip() else None
+    except ValueError:
+        raise HTTPException(
+            status_code=422,
+            detail="Площадь должна быть целым числом"
+        )
+
     result = data
-    if min_area is not None:
-        result = [p for p in result if p["area"] >= min_area]
-    if max_area is not None:
-        result = [p for p in result if p["area"] <= max_area]
+
+    if min_value is not None:
+        result = [
+            p for p in result
+            if p["area"] >= min_value
+        ]
+
+    if max_value is not None:
+        result = [
+            p for p in result
+            if p["area"] <= max_value
+        ]
+
+    if numeric_only:
+        result = [
+            p for p in result
+            if p.get("is_numeric", False)
+        ]
+
     return templates.TemplateResponse(
         request=request,
         name="publications.html",
-        context={"publications": result, "min_area": min_area, "max_area": max_area},
+        context={
+            "publications": result,
+            "min_area": min_area,
+            "max_area": max_area,
+            "numeric_only": numeric_only,
+        },
     )
+
 
 
 @app.get("/publications/{publication_id}", response_class=HTMLResponse)

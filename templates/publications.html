@@ -29,6 +29,12 @@
 
             <button type="submit">Применить</button>
          </div>
+
+         <label class="filter-checkbox" style="display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px;">
+            <input type="checkbox" name="numeric_only" value="true"
+               {% if numeric_only | default(false) %}checked{% endif %}>
+            Только числовые элементы
+         </label>
       </form>
 
       <main class="grid">
@@ -59,7 +65,7 @@
       </main>
 
       <nav class="bottom-nav">
-         <a href="/new-publication">
+         <a href="/publications/1">
             <span>⌂</span>
             Лента
          </a>
