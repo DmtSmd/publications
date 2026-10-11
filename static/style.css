@@ -472,3 +472,14 @@ h1 {
 .feed-app .bottom-nav {
    z-index: 100;
 }
+
+/* Доработки ЛР-1: видео, лайки и поля элементов */
+.story-like-form { margin: 0; }
+.story-like-form .story-heart { border: 0; font-family: inherit; line-height: 1; }
+.story-like-form .story-heart:hover,
+.story-like-form .story-heart:focus-visible { color: #e60023; }
+.story-status { font-size: 12px; margin: 10px 0 0; opacity: .9; }
+.card-meta { display: flex; justify-content: space-between; gap: 5px; margin-top: 8px; font-size: 11px; color: #777; }
+.filter-checkbox input[type="checkbox"] { width: 18px; height: 18px; accent-color: #e60023; padding: 0; }
+.upload-box { cursor: pointer; }
+.upload-box span:last-of-type { font-size: 13px; overflow-wrap: anywhere; }

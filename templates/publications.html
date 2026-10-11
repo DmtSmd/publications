@@ -55,6 +55,10 @@
                      {{ item.area }} кв. м.
                   </span>
                </div>
+               <div class="card-meta">
+                  <span>{{ "Числовой" if item.get("is_numeric", false) else "Текстовый" }}</span>
+                  <span>Слой {{ item.get("layer", 1) }}</span>
+               </div>
             </div>
          </article>
          {% else %}

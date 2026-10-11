@@ -11,7 +11,14 @@
 <body>
    <div class="app feed-app">
 
-      <img class="story-image" src="{{ item.image }}" alt="{{ item.title }}">
+       {% if item.get("video") %}
+       <video class="story-image" autoplay muted playsinline loop controls poster="{{ item.image }}">
+          <source src="{{ item.video }}" type="{% if item.video.endswith('.webm') %}video/webm{% else %}video/mp4{% endif %}">
+          Ваш браузер не поддерживает видео.
+       </video>
+       {% else %}
+       <img class="story-image" src="{{ item.image }}" alt="{{ item.title }}">
+       {% endif %}
 
       <div class="story-shade"></div>
 
@@ -29,11 +36,13 @@
       </div>
 
       <div class="story-actions">
-         <input type="checkbox" id="like" class="story-like-input">
-         <label for="like" class="story-heart">♥</label>
-         <span>124</span>
-
-         <a href="/publications/{{ next_id }}" class="story-next" aria-label="Следующая публикация">→</a>
+          {% if item.get("status", "published") == "published" %}
+          <form method="post" action="/publications/{{ item.id }}/like" class="story-like-form">
+             <button type="submit" class="story-heart" aria-label="Поставить лайк">♥</button>
+          </form>
+          <span>{{ item.get("likes", 0) }}</span>
+          <a href="/publications/{{ item.id }}?next=true" class="story-next" aria-label="Следующая публикация">→</a>
+          {% endif %}
       </div>
 
       <div class="story-bottom">
@@ -51,7 +60,12 @@
          <div class="story-tags">
             <span>{{ item.theme }}</span>
             <span>{{ item.area }} кв. м.</span>
-         </div>
+             <span>{{ "Числовой" if item.get("is_numeric", false) else "Текстовый" }}</span>
+             <span>Слой {{ item.get("layer", 1) }}</span>
+          </div>
+          {% if item.get("status", "published") != "published" %}
+          <p class="story-status">Статус: {{ "Черновик" if item.get("status") == "draft" else "Удалён" }}</p>
+          {% endif %}
       </div>
 
       <nav class="bottom-nav">
