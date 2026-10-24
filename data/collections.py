@@ -1,10 +1,10 @@
 """Коллекция данных ЛР-1.
 
-В первой лабораторной база данных не используется: данные хранятся в Python-коллекции.
+В первой лабораторной база данных не используется:
+данные хранятся в Python-коллекции.
+
 Каждая карточка — элемент публикации-истории.
 """
-
-MINIO_BASE_URL = "http://localhost:9000/publications"
 
 publications_db = [
     {
@@ -14,8 +14,8 @@ publications_db = [
         "publication_is_numeric": False,
         "publication_layer": 5,
         "publication_filtering": True,
-        "publication_image_url": f"{MINIO_BASE_URL}/publication-text.jpg",
-        "publication_video_url": f"{MINIO_BASE_URL}/publication-story.mp4",
+        "publication_image": "publication-text.jpg",
+        "publication_video": None,
         "publication_likes": 124,
     },
     {
@@ -25,8 +25,8 @@ publications_db = [
         "publication_is_numeric": False,
         "publication_layer": 2,
         "publication_filtering": True,
-        "publication_image_url": f"{MINIO_BASE_URL}/publication-location.jpg",
-        "publication_video_url": f"{MINIO_BASE_URL}/publication-story.mp4",
+        "publication_image": "publication-location.jpg",
+        "publication_video": None,
         "publication_likes": 86,
     },
     {
@@ -36,8 +36,8 @@ publications_db = [
         "publication_is_numeric": False,
         "publication_layer": 4,
         "publication_filtering": False,
-        "publication_image_url": f"{MINIO_BASE_URL}/publication-mention.jpg",
-        "publication_video_url": f"{MINIO_BASE_URL}/publication-story.mp4",
+        "publication_image": "publication-mention.jpg",
+        "publication_video": None,
         "publication_likes": 53,
     },
     {
@@ -47,8 +47,8 @@ publications_db = [
         "publication_is_numeric": True,
         "publication_layer": 3,
         "publication_filtering": True,
-        "publication_image_url": f"{MINIO_BASE_URL}/publication-number.jpg",
-        "publication_video_url": f"{MINIO_BASE_URL}/publication-story.mp4",
+        "publication_image": "publication-number.jpg",
+        "publication_video": None,
         "publication_likes": 41,
     },
     {
@@ -58,8 +58,8 @@ publications_db = [
         "publication_is_numeric": True,
         "publication_layer": 1,
         "publication_filtering": False,
-        "publication_image_url": f"{MINIO_BASE_URL}/publication-day.jpg",
-        "publication_video_url": f"{MINIO_BASE_URL}/publication-story.mp4",
+        "publication_image": "publication-day.jpg",
+        "publication_video": "publication-story.mp4",
         "publication_likes": 29,
     },
 ]
