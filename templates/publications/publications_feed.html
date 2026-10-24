@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ publication.publication_element }} — Publications</title>
+  <link rel="stylesheet" href="/static/publications/publications.css">
+</head>
+<body class="feed-body">
+<div class="app-shell feed-shell">
+  <img class="feed-media feed-poster" src="{{ publication.publication_image_url }}" alt="{{ publication.publication_element }}">
+  <video class="feed-media feed-video" autoplay muted loop playsinline poster="{{ publication.publication_image_url }}">
+    <source src="{{ publication.publication_video_url }}" type="video/mp4">
+  </video>
+  <div class="feed-gradient"></div>
+
+  <div class="feed-top">
+    <div class="story-progress">
+      {% for number in range(1, publications_total + 1) %}
+      <span class="{% if number <= publication_position %}filled{% endif %}"></span>
+      {% endfor %}
+    </div>
+    <div class="feed-top-row">
+      <a href="/publications" class="round-button" aria-label="Назад">←</a>
+      <span>{{ publication_position }}/{{ publications_total }}</span>
+    </div>
+  </div>
+
+  <aside class="feed-actions">
+    <a href="/publications/{{ publication.publication_id }}?like=true" class="action-circle" aria-label="Лайк">♥</a>
+    <span>{{ publication.publication_likes }}</span>
+    <a href="/publications/{{ publication.publication_id }}?next=true" class="action-circle" aria-label="Следующий">→</a>
+  </aside>
+
+  <section class="feed-content">
+    <h1>{{ publication.publication_element }}</h1>
+    <p class="feed-description">{{ publication.publication_content }}</p>
+    <span class="more-label">Ещё</span>
+    <div class="feed-parameters">
+      <span>{{ "Числовой" if publication.publication_is_numeric else "Текстовый" }}</span>
+      <span>Слой {{ publication.publication_layer }}</span>
+    </div>
+  </section>
+
+  <nav class="bottom-nav feed-nav">
+    <a href="/publications/1" class="active"><span>▶</span>Лента</a>
+    <a href="/publications/new"><span>＋</span>Добавление</a>
+    <a href="/publications"><span>▦</span>Плитка</a>
+  </nav>
+</div>
+</body>
+</html>

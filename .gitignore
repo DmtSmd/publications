@@ -1,23 +1,9 @@
-
-# Python
 __pycache__/
 *.pyc
 .venv/
 venv/
-.pytest_cache/
-
-# Секреты и настройки
 .env
 .env.*
-*.license
-*.lic
-test_minio.py
-
-# Локальные данные
-publications_data.json
-minio-data/
-
-# Служебные файлы
 .vscode/
 .idea/
 *.log

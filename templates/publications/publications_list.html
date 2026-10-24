@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publications — элементы публикации</title>
+  <link rel="stylesheet" href="/static/publications/publications.css">
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">PUBLICATIONS</div>
+      <h1>Элементы публикации</h1>
+    </div>
+    <div class="topbar-mark">◎</div>
+  </header>
+
+  <form class="filter-card" method="get" action="/publications">
+    <label class="filter-check">
+      <input type="checkbox" name="publication_filtering" value="true"
+             {% if publication_filtering %}checked{% endif %}>
+      <span>Фильтрация</span>
+    </label>
+    <button type="submit">Применить</button>
+  </form>
+
+  <main class="publication-grid">
+    {% for publication in publications %}
+    <article class="publication-card">
+      <a class="publication-cover" href="/publications/{{ publication.publication_id }}">
+        <img src="{{ publication.publication_image_url }}" alt="{{ publication.publication_element }}">
+        <span class="publication-type-icon">
+          {% if publication.publication_is_numeric %}123{% else %}Aa{% endif %}
+        </span>
+      </a>
+      <div class="publication-card-body">
+        <h2>{{ publication.publication_element }}</h2>
+        <p>{{ publication.publication_content }}</p>
+        <div class="publication-meta">
+          <span>{{ "Числовой" if publication.publication_is_numeric else "Текстовый" }}</span>
+          <span>Слой {{ publication.publication_layer }}</span>
+        </div>
+        <div class="filter-state">
+          {{ "✓ Используется в фильтрации" if publication.publication_filtering else "Не используется в фильтрации" }}
+        </div>
+      </div>
+    </article>
+    {% else %}
+    <p class="empty-state">Элементы с признаком «Фильтрация» не найдены.</p>
+    {% endfor %}
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="/publications/1"><span>▶</span>Лента</a>
+    <a href="/publications/new"><span>＋</span>Добавление</a>
+    <a href="/publications" class="active"><span>▦</span>Плитка</a>
+  </nav>
+</div>
+</body>
+</html>

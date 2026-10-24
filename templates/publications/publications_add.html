@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Добавление — Publications</title>
+  <link rel="stylesheet" href="/static/publications/publications.css">
+</head>
+<body>
+<div class="app-shell">
+  <header class="editor-topbar">
+    <a href="/publications" class="editor-back">←</a>
+    <h1>Новый элемент</h1>
+  </header>
+
+  <main class="editor-content">
+    <section class="media-field">
+      <label>Фото</label>
+      <img src="{{ publication.publication_image_url }}" alt="Пример фото элемента публикации">
+      <input type="file" name="publication_image" accept="image/png,image/jpeg,image/webp">
+    </section>
+
+    <section class="media-field">
+      <label>Видео</label>
+      <video controls muted poster="{{ publication.publication_image_url }}">
+        <source src="{{ publication.publication_video_url }}" type="video/mp4">
+      </video>
+      <input type="file" name="publication_video" accept="video/mp4,video/webm">
+    </section>
+
+    <label class="field-label" for="publication_element">Элемент публикации</label>
+    <select id="publication_element" name="publication_element" class="field-control">
+      <option>Текст</option>
+      <option>Локация</option>
+      <option>Упоминание</option>
+      <option>Счётчик</option>
+    </select>
+
+    <label class="field-label" for="publication_content">Содержимое элемента</label>
+    <input id="publication_content" class="field-control" name="publication_content"
+           value="{{ publication.publication_content }}">
+
+    <label class="checkbox-row">
+      <input type="checkbox" name="publication_is_numeric">
+      <span>Числовое значение</span>
+    </label>
+
+    <label class="field-label" for="publication_layer">Порядок наложения</label>
+    <select id="publication_layer" name="publication_layer" class="field-control">
+      {% for number in range(1, 6) %}
+      <option value="{{ number }}" {% if number == publication.publication_layer %}selected{% endif %}>{{ number }}</option>
+      {% endfor %}
+    </select>
+    <p class="field-hint">1 — снизу, 5 — сверху</p>
+
+    <label class="checkbox-row">
+      <input type="checkbox" name="publication_filtering" checked>
+      <span>Фильтрация</span>
+    </label>
+
+    <p class="lab-note">В ЛР-1 кнопки сохранения, публикации и статусы не используются.</p>
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="/publications/1"><span>▶</span>Лента</a>
+    <a href="/publications/new" class="active"><span>＋</span>Добавление</a>
+    <a href="/publications"><span>▦</span>Плитка</a>
+  </nav>
+</div>
+</body>
+</html>
