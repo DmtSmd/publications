@@ -4,93 +4,261 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Добавление — Publications</title>
+
   <link rel="stylesheet" href="/static/publications/publications.css">
 </head>
 
 <body>
+
   <div class="app-shell">
 
     <header class="editor-topbar">
-      <a href="/publications" class="editor-back">←</a>
-      <h1>Новый элемент</h1>
+
+      <a href="/publications" class="editor-back">
+        ←
+      </a>
+
+      <h1>
+        {% if publication %}
+        Черновик
+        {% else %}
+        Новый элемент
+        {% endif %}
+      </h1>
+
     </header>
+
 
     <main class="editor-content">
 
+      {% if not publication %}
+
+      <!-- =========================
+           НОВЫЙ ЭЛЕМЕНТ
+           ========================= -->
+
+      <form method="post" action="/publications/new">
+
+        <section class="media-field">
+
+          <label>
+            Фото
+          </label>
+
+          <img src="/static/publications/default-publication.jpg" alt="Фото по умолчанию">
+
+        </section>
+
+
+        <section class="media-field">
+
+          <label>
+            Видео
+          </label>
+
+          <video controls muted poster="/static/publications/default-publication.jpg">
+
+            <source src="/static/publications/default-publication.mp4" type="video/mp4">
+
+          </video>
+
+        </section>
+
+
+        <label class="field-label" for="publication_element">
+          Элемент публикации
+        </label>
+
+        <select id="publication_element" name="publication_element" class="field-control">
+          <option>Текст</option>
+          <option>Локация</option>
+          <option>Упоминание</option>
+          <option>Счётчик</option>
+        </select>
+
+
+        <label class="field-label" for="publication_content">
+          Содержимое элемента
+        </label>
+
+        <input id="publication_content" name="publication_content" class="field-control" required>
+
+
+        <label class="checkbox-row">
+
+          <input type="checkbox" name="publication_is_numeric" value="true">
+
+          <span>
+            Числовое значение
+          </span>
+
+        </label>
+
+
+        <label class="field-label" for="publication_layer">
+          Порядок наложения
+        </label>
+
+        <select id="publication_layer" name="publication_layer" class="field-control">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5" selected>5</option>
+        </select>
+
+
+        <p class="field-hint">
+          1 — снизу, 5 — сверху
+        </p>
+
+
+        <label class="checkbox-row">
+
+          <input type="checkbox" name="publication_filtering" value="true">
+
+          <span>
+            Фильтрация
+          </span>
+
+        </label>
+
+
+        <button type="submit" class="publish-button" style="
+            display: block;
+            width: 100%;
+            margin-top: 24px;
+            padding: 18px 24px;
+            border: none;
+            border-radius: 18px;
+            background: #0095f6;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+          ">
+          Далее
+        </button>
+
+      </form>
+
+
+      {% else %}
+
+      <!-- =========================
+           СУЩЕСТВУЮЩИЙ DRAFT
+           ========================= -->
+
       <section class="media-field">
-        <label>Фото</label>
 
-        <img src="{{ publication.publication_image_url }}" alt="Пример фото элемента публикации">
+        <label>
+          Фото
+        </label>
 
-        <input type="file" name="publication_image" accept="image/png,image/jpeg,image/webp">
+        <img src="{{ publication.publication_image_url or '/static/publications/default-publication.jpg' }}" onerror="
+            this.onerror=null;
+            this.src='/static/publications/default-publication.jpg';
+          " alt="Фото элемента публикации">
+
       </section>
 
+
       <section class="media-field">
-        <label>Видео</label>
 
-        {% if publication.publication_video_url %}
+        <label>
+          Видео
+        </label>
 
-        <video controls muted poster="{{ publication.publication_image_url }}">
+        <video controls muted poster="/static/publications/default-publication.jpg">
+
+          {% if publication.publication_video_url %}
+
           <source src="{{ publication.publication_video_url }}" type="video/mp4">
+
+          {% endif %}
+
+          <source src="/static/publications/default-publication.mp4" type="video/mp4">
+
         </video>
 
-        {% else %}
-
-        <div class="video-placeholder">
-          Видео не выбрано
-        </div>
-
-        {% endif %}
-
-        <input type="file" name="publication_video" accept="video/mp4,video/webm">
       </section>
 
-      <label class="field-label" for="publication_element">
+
+      <label class="field-label">
         Элемент публикации
       </label>
 
-      <select id="publication_element" name="publication_element" class="field-control">
-        <option>Текст</option>
-        <option>Локация</option>
-        <option>Упоминание</option>
-        <option>Счётчик</option>
-      </select>
+      <div class="field-control">
+        {{ publication.publication_element }}
+      </div>
 
-      <label class="field-label" for="publication_content">
+
+      <label class="field-label">
         Содержимое элемента
       </label>
 
-      <input id="publication_content" class="field-control" name="publication_content"
-        value="{{ publication.publication_content }}">
+      <div class="field-control">
+        {{ publication.publication_content }}
+      </div>
 
-      <label class="checkbox-row">
-        <input type="checkbox" name="publication_is_numeric">
-        <span>Числовое значение</span>
-      </label>
 
-      <label class="field-label" for="publication_layer">
+      <div class="checkbox-row">
+
+        {% if publication.publication_is_numeric %}
+        ☑ Числовое значение
+        {% else %}
+        ☐ Числовое значение
+        {% endif %}
+
+      </div>
+
+
+      <label class="field-label">
         Порядок наложения
       </label>
 
-      <select id="publication_layer" name="publication_layer" class="field-control">
-        {% for number in range(1, 6) %}
-        <option value="{{ number }}" {% if number==publication.publication_layer %}selected{% endif %}>
-          {{ number }}
-        </option>
-        {% endfor %}
-      </select>
+      <div class="field-control">
+        {{ publication.publication_layer }}
+      </div>
 
-      <p class="field-hint">
-        1 — снизу, 5 — сверху
-      </p>
 
-      <label class="checkbox-row">
-        <input type="checkbox" name="publication_filtering" checked>
-        <span>Фильтрация</span>
-      </label>
+      <div class="checkbox-row">
+
+        {% if publication.publication_filtering %}
+        ☑ Фильтрация
+        {% else %}
+        ☐ Фильтрация
+        {% endif %}
+
+      </div>
+
+
+      <form method="post" action="/publications/{{ publication.publication_id }}/publish">
+
+        <button type="submit" class="publish-button" style="
+            display: block;
+            width: 100%;
+            margin-top: 24px;
+            padding: 18px 24px;
+            border: none;
+            border-radius: 18px;
+            background: #0095f6;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+          ">
+          Опубликовать
+        </button>
+
+      </form>
+
+      {% endif %}
 
     </main>
+
 
     <nav class="bottom-nav">
 
@@ -112,6 +280,7 @@
     </nav>
 
   </div>
+
 </body>
 
 </html>
