@@ -15,17 +15,22 @@
     {% if publication.publication_video_url %}
 
     <video class="feed-media feed-video" autoplay muted loop playsinline
-      poster="{{ publication.publication_image_url }}">
+      poster="/static/publications/default-publication.jpg">
+
       <source src="{{ publication.publication_video_url }}" type="video/mp4">
+
+      <source src="/static/publications/default-publication.mp4" type="video/mp4">
+
     </video>
 
     {% else %}
 
-    <img class="feed-media feed-poster" src="{{ publication.publication_image_url }}"
+    <img class="feed-media feed-poster"
+      src="{{ publication.publication_image_url or '/static/publications/default-publication.jpg' }}"
+      onerror="this.onerror=null; this.src='/static/publications/default-publication.jpg';"
       alt="{{ publication.publication_element }}">
 
     {% endif %}
-
     <div class="feed-gradient"></div>
 
     <div class="feed-top">

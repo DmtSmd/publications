@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Form, Query, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
+
 from sqlalchemy import select, text
+from sqlalchemy.orm import selectinload
 
 from database.database import SessionLocal
 from database.models import Publication
@@ -17,6 +17,28 @@ templates = Jinja2Templates(directory="templates")
 def prepare_publication(publication: Publication) -> dict:
     """Преобразуем ORM-объект в данные для Jinja-шаблона."""
 
+    image_url = None
+    video_url = None
+
+    # Если имя файла нормальное — получаем ссылку из MinIO.
+    # Если имя начинается с invalid-, оставляем None,
+    # чтобы шаблон показал default photo / default video.
+    if (
+        publication.publication_image
+        and not publication.publication_image.startswith("invalid-")
+    ):
+        image_url = get_media_url(
+            publication.publication_image
+        )
+
+    if (
+        publication.publication_video
+        and not publication.publication_video.startswith("invalid-")
+    ):
+        video_url = get_media_url(
+            publication.publication_video
+        )
+
     return {
         "publication_id": publication.publication_id,
         "publication_element": publication.publication_element,
@@ -27,8 +49,8 @@ def prepare_publication(publication: Publication) -> dict:
         "publication_status": publication.publication_status,
         "publication_image": publication.publication_image,
         "publication_video": publication.publication_video,
-        "publication_image_url": get_media_url(publication.publication_image),
-        "publication_video_url": get_media_url(publication.publication_video),
+        "publication_image_url": image_url,
+        "publication_video_url": video_url,
         "publication_likes": len(publication.likes),
         "publication_creator_id": publication.publication_creator_id,
     }
@@ -42,6 +64,10 @@ def publications_root():
     )
 
 
+# =========================================================
+# СПИСОК ПУБЛИКАЦИЙ
+# =========================================================
+
 @router.get("/publications")
 def publications_list(
     request: Request,
@@ -52,7 +78,9 @@ def publications_list(
         statement = (
             select(Publication)
             .options(selectinload(Publication.likes))
-            .where(Publication.publication_status == "published")
+            .where(
+                Publication.publication_status == "published"
+            )
             .order_by(Publication.publication_id)
         )
 
@@ -78,13 +106,20 @@ def publications_list(
     )
 
 
+# =========================================================
+# ФОРМА ДОБАВЛЕНИЯ / ЧЕРНОВИК
+# =========================================================
+
 @router.get("/publications/new")
 def publications_add(request: Request):
     with SessionLocal() as db:
+
         statement = (
             select(Publication)
             .options(selectinload(Publication.likes))
-            .where(Publication.publication_status == "draft")
+            .where(
+                Publication.publication_status == "draft"
+            )
             .order_by(Publication.publication_id)
         )
 
@@ -101,6 +136,11 @@ def publications_add(request: Request):
         },
     )
 
+
+# =========================================================
+# СОЗДАНИЕ ЧЕРНОВИКА
+# =========================================================
+
 @router.post("/publications/new")
 def publication_create_draft(
     publication_element: str = Form(...),
@@ -110,12 +150,14 @@ def publication_create_draft(
     publication_filtering: bool = Form(False),
 ):
     with SessionLocal() as db:
+
         existing_draft = db.scalars(
             select(Publication).where(
                 Publication.publication_status == "draft"
             )
         ).first()
 
+        # Одновременно может существовать только один черновик.
         if existing_draft is not None:
             return RedirectResponse(
                 url="/publications/new",
@@ -129,8 +171,12 @@ def publication_create_draft(
             publication_layer=publication_layer,
             publication_filtering=publication_filtering,
             publication_status="draft",
-            publication_image="publication-text.jpg",
-            publication_video=None,
+
+            # Специально неверные имена файлов.
+            # Это демонстрирует default media с SSR-сервера.
+            publication_image="invalid-publication-image.jpg",
+            publication_video="invalid-publication-video.mp4",
+
             publication_creator_id=1,
         )
 
@@ -141,9 +187,17 @@ def publication_create_draft(
         url="/publications/new",
         status_code=303,
     )
-@router.get("/publications/{publication_id}/delete")
+
+
+# =========================================================
+# ЛОГИЧЕСКОЕ УДАЛЕНИЕ
+# Чистый SQL UPDATE
+# =========================================================
+
+@router.post("/publications/{publication_id}/delete")
 def publication_delete(publication_id: int):
     with SessionLocal() as db:
+
         db.execute(
             text(
                 """
@@ -153,7 +207,7 @@ def publication_delete(publication_id: int):
                 """
             ),
             {
-                "publication_id": publication_id
+                "publication_id": publication_id,
             },
         )
 
@@ -164,10 +218,19 @@ def publication_delete(publication_id: int):
         status_code=303,
     )
 
+
+# =========================================================
+# ПУБЛИКАЦИЯ ЧЕРНОВИКА
+# =========================================================
+
 @router.post("/publications/{publication_id}/publish")
 def publication_publish(publication_id: int):
     with SessionLocal() as db:
-        publication = db.get(Publication, publication_id)
+
+        publication = db.get(
+            Publication,
+            publication_id,
+        )
 
         if publication is None:
             return RedirectResponse(
@@ -182,6 +245,7 @@ def publication_publish(publication_id: int):
             )
 
         publication.publication_status = "published"
+
         db.commit()
 
     return RedirectResponse(
@@ -189,51 +253,81 @@ def publication_publish(publication_id: int):
         status_code=303,
     )
 
+
+# =========================================================
+# ЛЕНТА ПУБЛИКАЦИЙ
+# =========================================================
+
 @router.get("/publications/{publication_id}")
 def publications_feed(
     request: Request,
     publication_id: int,
-    next_publication: bool = Query(False, alias="next"),
-    like_publication: bool = Query(False, alias="like"),
+    next_publication: bool = Query(
+        False,
+        alias="next",
+    ),
+    like_publication: bool = Query(
+        False,
+        alias="like",
+    ),
 ):
     with SessionLocal() as db:
 
+        # Получаем только опубликованную запись.
         statement = (
             select(Publication)
-            .options(selectinload(Publication.likes))
+            .options(
+                selectinload(Publication.likes)
+            )
             .where(
                 Publication.publication_id == publication_id,
                 Publication.publication_status == "published",
             )
         )
 
-        publication = db.scalars(statement).first()
+        publication = db.scalars(
+            statement
+        ).first()
 
-        # draft и deleted напрямую открыть нельзя
+        # draft и deleted напрямую открывать нельзя.
         if publication is None:
             return RedirectResponse(
                 url="/publications",
                 status_code=302,
             )
 
-        # Во второй ЛР новые лайки пока не создаём.
-        # Показываем количество существующих лайков из БД.
+        # Во второй ЛР новые лайки через приложение
+        # пока не создаём.
+        # Отображается количество строк из БД.
         if like_publication:
             return RedirectResponse(
                 url=f"/publications/{publication_id}",
                 status_code=303,
             )
 
+        # -------------------------------------------------
+        # Переход к следующей публикации
+        # -------------------------------------------------
+
         if next_publication:
 
             statement = (
                 select(Publication)
-                .options(selectinload(Publication.likes))
-                .where(Publication.publication_status == "published")
-                .order_by(Publication.publication_id)
+                .options(
+                    selectinload(Publication.likes)
+                )
+                .where(
+                    Publication.publication_status
+                    == "published"
+                )
+                .order_by(
+                    Publication.publication_id
+                )
             )
 
-            publications = db.scalars(statement).all()
+            publications = db.scalars(
+                statement
+            ).all()
 
             current_index = next(
                 index
@@ -250,14 +344,27 @@ def publications_feed(
                 status_code=303,
             )
 
+        # -------------------------------------------------
+        # Определяем позицию публикации в ленте
+        # -------------------------------------------------
+
         statement = (
             select(Publication)
-            .options(selectinload(Publication.likes))
-            .where(Publication.publication_status == "published")
-            .order_by(Publication.publication_id)
+            .options(
+                selectinload(Publication.likes)
+            )
+            .where(
+                Publication.publication_status
+                == "published"
+            )
+            .order_by(
+                Publication.publication_id
+            )
         )
 
-        publications = db.scalars(statement).all()
+        publications = db.scalars(
+            statement
+        ).all()
 
         publication_position = next(
             index + 1
@@ -267,7 +374,9 @@ def publications_feed(
 
         publications_total = len(publications)
 
-        prepared_publication = prepare_publication(publication)
+        prepared_publication = prepare_publication(
+            publication
+        )
 
     return templates.TemplateResponse(
         request=request,

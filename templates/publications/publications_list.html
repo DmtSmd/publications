@@ -31,7 +31,9 @@
       {% for publication in publications %}
       <article class="publication-card">
         <a class="publication-cover" href="/publications/{{ publication.publication_id }}">
-          <img src="{{ publication.publication_image_url }}" alt="{{ publication.publication_element }}">
+          <img src="{{ publication.publication_image_url or '/static/publications/default-publication.jpg' }}"
+            onerror="this.onerror=null; this.src='/static/publications/default-publication.jpg';"
+            alt="{{ publication.publication_element }}">
           <span class="publication-type-icon">
             {% if publication.publication_is_numeric %}123{% else %}Aa{% endif %}
           </span>
@@ -43,9 +45,11 @@
             <span>{{ "Числовой" if publication.publication_is_numeric else "Текстовый" }}</span>
             <span>Слой {{ publication.publication_layer }}</span>
           </div>
-          <a href="/publications/{{ publication.publication_id }}/delete" class="delete-publication-button">
-            Удалить
-          </a>
+          <form method="post" action="/publications/{{ publication.publication_id }}/delete">
+            <button type="submit" class="delete-publication-button">
+              Удалить
+            </button>
+          </form>
           <div class="filter-state">
             {{ "✓ Используется в фильтрации" if publication.publication_filtering else "Не используется в фильтрации" }}
           </div>
